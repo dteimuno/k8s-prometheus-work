@@ -20,5 +20,5 @@ metrics:
   enabled: true
   serviceMonitor:
     enabled: true
-    additionalLabels:
+    labels:
       release: monitoring-stack

@@ -18,7 +18,7 @@ spec:
       - name: my-registry-key
       containers:
       - name: javamysqlapp
-        image: nanajanashia/demo-app:java-mysql-app-monitoring
+        image: nanatwn/demo-app:monitoring
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
