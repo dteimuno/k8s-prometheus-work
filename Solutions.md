@@ -18,7 +18,7 @@ DOCKER_USER=your dockerID, same as for `docker login`
 DOCKER_EMAIL=your dockerhub email, same as for `docker login`
 DOCKER_PASSWORD=your dockerhub pwd, same as for `docker login`
 
-kubectl create secret -n my-app docker-registry my-registry-key \
+kubectl create secret docker-registry my-registry-key \
 --docker-server=$DOCKER_REGISTRY_SERVER \
 --docker-username=$DOCKER_USER \
 --docker-password=$DOCKER_PASSWORD \
@@ -51,7 +51,7 @@ kubectl create namespace monitoring
 helm install monitoring-stack prometheus-community/kube-prometheus-stack -n monitoring
 
 # Access Prometheus UI and view its targets
-kubectl port-forward svc/monitoring-stack-kube-prom-prometheus 9090:9090
+kubectl -n monitoring port-forward svc/monitoring-stack-kube-prom-prometheus 9090:9090
 http://127.0.0.1:9090/targets
 
 # Clean up and prepare for new installation
@@ -67,16 +67,17 @@ kubectl get prometheuses.monitoring.coreos.com {crd-name} -o yaml | grep service
 
 # Build and use the correct java-app image with metrics exposed:
 # check out the java app code with prometheus client inside
-git checkout feature/monitoring
+git checkout main
 # build a new jar
-./gradlew clean build
+gradle clean build
 # build a docker image
-docker build {docker-hub-id}:{repo-name}:{tag} .
+docker build -t {docker-hub-id}:{repo-name}:{tag} .
 docker push {docker-hub-id}:{repo-name}:{tag}
 # set the correct image name "{docker-hub-id}:{repo-name}:{tag}" in "kubernetes-manifests/java-app.yaml" file
 
 
 # To add metrics scraping to nginx, mysql and java apps, execute ansible playbook
+# Ensure you have added the correct IP addressing details to your ingress YAML file
 ansible-playbook 2-configure-k8s.yaml
 
 # Access Prometheus UI and see that new targets for mysql, nginx and your java application have been added
